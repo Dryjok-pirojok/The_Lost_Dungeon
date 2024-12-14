@@ -1,4 +1,11 @@
 from data.entities.entity_base import EntityBase
 
+
 class Player(EntityBase):
-    pass
+
+    def __init__(self):
+        super().__init__()
+
+
+    def Take_control(self):
+        pass

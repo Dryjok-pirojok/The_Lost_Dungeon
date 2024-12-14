@@ -40,7 +40,7 @@ def Loop():
 
     running = True
     cols_x = 50
-    cols_y = 10
+    cols_y = 20
     cam_pos_x = 0
     cam_pos_y = 0
     grid = Grid(screen, size[0], size[1], cols_x, cols_y)
