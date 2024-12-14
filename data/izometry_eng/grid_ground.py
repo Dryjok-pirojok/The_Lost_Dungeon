@@ -15,9 +15,9 @@ class Grid:  # Cетка для тайтлов
 
     def draw_test_rect(self, x: int, y: int):
         """ПРИНИМАЕТ КООРДИНАТЫ ЦЕНТРА ТАЙТЛА"""
-        pygame.draw.rect(self.screen, pygame.Color("0x00FFFF"), (x - self.__cell_size_x__ // 2,
-                         y - self.__cell_size_y__ // 2,
-                         self.__cell_size_x__, self.__cell_size_y__), 1)
+        # pygame.draw.rect(self.screen, pygame.Color("0x00FFFF"), (x - self.__cell_size_x__ // 2,
+        #                  y - self.__cell_size_y__ // 2,
+        #                  self.__cell_size_x__, self.__cell_size_y__), 1)
         pygame.draw.line(self.screen, pygame.Color("0xFF00FF"),
                          (x - self.__cell_size_x__ // 2 + self.__cell_size_x__ // 5 * 3,
                           y - self.__cell_size_y__ // 2), (x - self.__cell_size_x__ // 2,
