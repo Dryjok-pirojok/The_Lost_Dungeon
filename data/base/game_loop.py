@@ -40,7 +40,7 @@ def Loop():
 
     running = True
     cols_x = 50
-    cols_y = 20
+    cols_y = 50
     cam_pos_x = 0
     cam_pos_y = 0
     grid = Grid(screen, size[0], size[1], cols_x, cols_y)
@@ -97,10 +97,11 @@ def Loop():
                                                                                   cam_pos_x, cam_pos_y))
             thread_ground.start()
             thread_ground.join()
+            selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
             thread_wall.start()
 
             thread_wall.join()
-            selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
+            moved = False
             k = 0
         k += 1
         pygame.display.flip()
