@@ -80,7 +80,7 @@ def Loop():
                     y = y - cam_pos_y
                     x -= 8
                     y += 20
-                    tx = abs(int((x - 4 * y / 3) / 64))
+                    tx = - int((x - 4 * y / 3) / 64)
                     ty = int((x + 4 * y) / 128)
                     moved = True
 

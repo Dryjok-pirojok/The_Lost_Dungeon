@@ -44,7 +44,7 @@ def main_menu():
             if event.type == pygame.QUIT:
                 running = False
         pygame.display.flip()
-        if random.randint(0, 10000) == 1000 and not t1.is_alive():
+        if random.randint(0, 1000) == 100 and not t1.is_alive():
             try:
                 t1 = threading.Thread(target=change_image,
                                       args=(screen, menu_png, menu_png_l, menu_png_rect, menu_png_rect_l))
