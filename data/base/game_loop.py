@@ -4,32 +4,47 @@ import threading
 import multiprocessing
 
 
-def draw_ground_grid(cols_x: int, cols_y: int, grid: Grid, weight: int, cam_pos_x: int, cam_pos_y: int):
+def draw_ground_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int):
+    cols_x = grid.cols_x
+    cols_y = grid.cols_y
+    width = grid.width
+    height = grid.height
+
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
         x = 2 * 16 * ty - 3 * 16 * tx
         y = 2 * 12 * ty + 12 * tx
-        grid.draw_test_rect_ground(x + weight + cam_pos_x, y + cam_pos_y)
+        x_to_draw = x + width + cam_pos_x
+        y_to_draw = y + cam_pos_y
+        if -height * 0.2 < y_to_draw <= height * 1.2 and -width * 0.2 < x_to_draw <= width * 1.2:
+            grid.draw_test_rect_ground(x + width + cam_pos_x, y + cam_pos_y)
 
 
 def selected_title(grid: Grid, weight: int, cam_pos_x: int, cam_pos_y: int, tx: int, ty: int):
-
     x = 2 * 16 * ty - 3 * 16 * tx
     y = 2 * 12 * ty + 12 * tx
     grid.draw_red_ground(x + weight + cam_pos_x, y + cam_pos_y)
 
 
-def draw_walls_grid(cols_x: int, cols_y: int, grid: Grid, weight: int, cam_pos_x: int, cam_pos_y: int):
+def draw_walls_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int, side: int = 0):
+    cols_x = grid.cols_x
+    cols_y = grid.cols_y
+    width = grid.width
+    height = grid.height
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
         x = 2 * 16 * ty - 3 * 16 * tx
         y = 2 * 12 * ty + 12 * tx
+        x_to_draw = x + width + cam_pos_x
+        y_to_draw = y + cam_pos_y
         if ty == 0:
-            grid.draw_test_wall(x + weight + cam_pos_x, y + cam_pos_y, 1)
+            if -height * 0.2 < y_to_draw <= height * 1.2 and -width * 0.2 < x_to_draw <= width * 1.2:
+                grid.draw_test_wall(x_to_draw, y_to_draw, 1)
         if tx == 0:
-            grid.draw_test_wall(x + weight + cam_pos_x, y + cam_pos_y, 2)
+            if -height * 0.2 < y_to_draw <= height * 1.2 and -width * 0.2 < x_to_draw <= width * 1.2:
+                grid.draw_test_wall(x_to_draw, y_to_draw, 2)
 
 
 def Loop():
@@ -39,8 +54,8 @@ def Loop():
     clock = pygame.time.Clock()
 
     running = True
-    cols_x = 50
-    cols_y = 50
+    cols_x = 100
+    cols_y = 100
     cam_pos_x = 0
     cam_pos_y = 0
     grid = Grid(screen, size[0], size[1], cols_x, cols_y)
@@ -91,10 +106,8 @@ def Loop():
                     left_button = False
         if k % fps == 0 or right_button or moved:
             screen.fill("black")
-            thread_ground = threading.Thread(target=draw_ground_grid, args=(cols_x, cols_y, grid, weight,
-                                                                            cam_pos_x, cam_pos_y))
-            thread_wall = threading.Thread(target=draw_walls_grid, args=(cols_x, cols_y, grid, weight,
-                                                                                  cam_pos_x, cam_pos_y))
+            thread_ground = threading.Thread(target=draw_ground_grid, args=(grid, cam_pos_x, cam_pos_y))
+            thread_wall = threading.Thread(target=draw_walls_grid, args=(grid, cam_pos_x, cam_pos_y))
             thread_ground.start()
             thread_ground.join()
             selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
