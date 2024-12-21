@@ -4,3 +4,4 @@ class Boss_of_this_gym_t04(EntityEnemyBase):
 
     def __init__(self):
         super().__init__()
+        self.display_name = "BOSS OF THIS GYM"
