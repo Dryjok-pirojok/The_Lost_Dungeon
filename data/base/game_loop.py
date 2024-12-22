@@ -6,6 +6,7 @@ import threading
 import multiprocessing
 from data.base.floor_title_group import Floor
 from data.entities.player.player import Player
+from levels.TEST_LEVELS.test_level_01 import Test_level_01
 
 
 # def draw_ground_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int):
@@ -58,8 +59,9 @@ def Loop():
     clock = pygame.time.Clock()
     player = Player(weight, height)
     running = True
-    cols_x = 100
-    cols_y = 100
+    level = Test_level_01
+    cols_x = level.col_x
+    cols_y = level.col_y
     cam_pos_x = 0
     cam_pos_y = 0
     grid = Grid(screen, size[0], size[1], cols_x, cols_y)
@@ -78,7 +80,7 @@ def Loop():
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
-        Floor(floor_sprites, tx, ty, 1 if tx % 2 == 0 else 2, weight, height)
+        Floor(floor_sprites, tx, ty, level.cells[t], weight, height)
     while running:
 
         for event in pygame.event.get():

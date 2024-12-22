@@ -19,7 +19,6 @@ class Floor(pygame.sprite.Sprite):
         self.rect.y = 0
         self.x = 2 * 16 * ty - 3 * 16 * tx + self.width - 40
         self.y = 2 * 12 * ty + 12 * tx - 18
-        print(self.x, self.y)
     # def draw(self, screen: pygame.sprite.Group, cam_pos_x: int, cam_pos_y: int):
     #     screen.blit(self.image, (cam_pos_x + self.x, self.y + cam_pos_y))
 
