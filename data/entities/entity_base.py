@@ -41,14 +41,14 @@ class EntityBase:
     def update(self, dt):
         if self.tx != self.tx_move or self.ty_move != self.ty:
             if self.tx - self.tx_move < 0 and self.ty == self.ty_move:
-                self.rect.x -= 3 * 16 * 10 * dt
-                self.rect.y += 1 * 12 * dt * 10
+                self.rect.x -= 3 * 16 * 100 * dt
+                self.rect.y += 1 * 12 * dt * 100
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width + 20
                 z = abs((x - 4 * y / 3) / 64 - int((x - 4 * y / 3) / 64))
                 print(z)
                 tx = self.tx = - int((x - 4 * y / 3) / 64)
-                if z <= 0.1 and self.start_pos_x != tx:
+                if z <= 0.05 and self.start_pos_x != tx:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
@@ -56,8 +56,8 @@ class EntityBase:
                     self.start_pos_x = self.tx
 
             elif self.tx - self.tx_move > 0 and self.ty == self.ty_move:
-                self.rect.x += 3 * 16 * 10 * dt
-                self.rect.y -= 1 * 12 * dt * 10
+                self.rect.x += 3 * 16 * 100 * dt
+                self.rect.y -= 1 * 12 * dt * 100
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x - 4 * y / 3) / 64 - int((x - 4 * y / 3) / 64))
@@ -69,8 +69,8 @@ class EntityBase:
                     self.start_pos_x = self.tx
 
             elif self.tx == self.tx_move and self.ty - self.ty_move < 0:
-                self.rect.x += 2 * 16 * 10 * dt
-                self.rect.y += 2 * 12 * 10 * dt
+                self.rect.x += 2 * 16 * 100 * dt
+                self.rect.y += 2 * 12 * 100 * dt
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128))
@@ -82,8 +82,8 @@ class EntityBase:
                     self.start_pos_y = self.ty
 
             elif self.tx == self.tx_move and self.ty - self.ty_move > 0:
-                self.rect.x -= 2 * 16 * 10 * dt
-                self.rect.y -= 2 * 12 * 10 * dt
+                self.rect.x -= 2 * 16 * 100 * dt
+                self.rect.y -= 2 * 12 * 100 * dt
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128))
@@ -95,8 +95,8 @@ class EntityBase:
                     self.start_pos_y = self.ty
 
             elif self.ty - self.ty_move < 0 and self.tx - self.tx_move < 0:
-                self.rect.x -= 1 * 16 * 10 * dt
-                self.rect.y += 3 * 12 * 10 * dt
+                self.rect.x -= 1 * 16 * 100 * dt
+                self.rect.y += 3 * 12 * 100 * dt
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
@@ -112,8 +112,8 @@ class EntityBase:
                     self.start_pos_x = self.tx
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move > 0:
-                self.rect.x += 1 * 16 * 10 * dt
-                self.rect.y -= 3 * 12 * 10 * dt
+                self.rect.x += 1 * 16 * 100 * dt
+                self.rect.y -= 3 * 12 * 100 * dt
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
@@ -130,8 +130,8 @@ class EntityBase:
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move < 0:
                 print(self.tx_move, self.ty_move)
-                self.rect.x -= 5 * 16 * 10 * dt
-                self.rect.y -= 1 * 12 * 10 * dt
+                self.rect.x -= 5 * 16 * 100 * dt
+                self.rect.y -= 1 * 12 * 100 * dt
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
