@@ -7,7 +7,6 @@ class Player(EntityBase):
     def __init__(self, width, height):
         super().__init__(width, height, 0, 0, load_image("textures/entities/test_npc.png"))
 
-
-    def Take_control(self):
+    def take_control(self):
         pass
 

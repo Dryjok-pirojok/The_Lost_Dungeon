@@ -26,6 +26,9 @@ class EntityBase:
     height: int
     start_pos_x: int
     start_pos_y: int
+    curr_pos_float_x: float
+    curr_pos_float_y: float
+
     def __init__(self, width: int, height: int, tx: int, ty: int, image: pygame.image):
         self.width = width
         self.height = height
@@ -37,27 +40,34 @@ class EntityBase:
         self.rect = self.image.get_rect()
         self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
         self.rect.y = 2 * 12 * self.ty + 12 * self.tx
+        self.curr_pos_float_x = float(self.rect.x)
+        self.curr_pos_float_y = float(self.rect.y)
         
     def update(self, dt):
         if self.tx != self.tx_move or self.ty_move != self.ty:
             if self.tx - self.tx_move < 0 and self.ty == self.ty_move:
-                self.rect.x -= 3 * 16 * 100 * dt
-                self.rect.y += 1 * 12 * dt * 100
+                self.curr_pos_float_x -= 3 * 16 * dt * 10
+                self.curr_pos_float_y += 1 * 12 * dt * 10
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
-                x = x - self.width + 20
+                x = x - self.width
                 z = abs((x - 4 * y / 3) / 64 - int((x - 4 * y / 3) / 64))
-                print(z)
                 tx = self.tx = - int((x - 4 * y / 3) / 64)
                 if z <= 0.05 and self.start_pos_x != tx:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
-                    print(self.tx, self.ty)
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
                     self.start_pos_x = self.tx
 
+
             elif self.tx - self.tx_move > 0 and self.ty == self.ty_move:
-                self.rect.x += 3 * 16 * 100 * dt
-                self.rect.y -= 1 * 12 * dt * 100
+                self.curr_pos_float_x += 3 * 16 * 10 * dt
+                self.curr_pos_float_y -= 1 * 12 * dt * 10
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x - 4 * y / 3) / 64 - int((x - 4 * y / 3) / 64))
@@ -66,11 +76,15 @@ class EntityBase:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
                     self.start_pos_x = self.tx
 
             elif self.tx == self.tx_move and self.ty - self.ty_move < 0:
-                self.rect.x += 2 * 16 * 100 * dt
-                self.rect.y += 2 * 12 * 100 * dt
+                self.curr_pos_float_x += 2 * 16 * 10 * dt
+                self.curr_pos_float_y += 2 * 12 * 10 * dt
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128))
@@ -82,8 +96,10 @@ class EntityBase:
                     self.start_pos_y = self.ty
 
             elif self.tx == self.tx_move and self.ty - self.ty_move > 0:
-                self.rect.x -= 2 * 16 * 100 * dt
-                self.rect.y -= 2 * 12 * 100 * dt
+                self.curr_pos_float_x -= 2 * 16 * 10 * dt
+                self.curr_pos_float_y -= 2 * 12 * 10 * dt
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128))
@@ -92,11 +108,15 @@ class EntityBase:
                     self.ty = int((x + 4 * y) / 128)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
 
             elif self.ty - self.ty_move < 0 and self.tx - self.tx_move < 0:
-                self.rect.x -= 1 * 16 * 100 * dt
-                self.rect.y += 3 * 12 * 100 * dt
+                self.curr_pos_float_x -= 1 * 16 * 10 * dt
+                self.curr_pos_float_y += 3 * 12 * 10 * dt
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
@@ -108,12 +128,16 @@ class EntityBase:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move > 0:
-                self.rect.x += 1 * 16 * 100 * dt
-                self.rect.y -= 3 * 12 * 100 * dt
+                self.curr_pos_float_x += 1 * 16 * 10 * dt
+                self.curr_pos_float_y -= 3 * 12 * 10 * dt
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
@@ -125,19 +149,20 @@ class EntityBase:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move < 0:
-                print(self.tx_move, self.ty_move)
-                self.rect.x -= 5 * 16 * 100 * dt
-                self.rect.y -= 1 * 12 * 100 * dt
+                self.curr_pos_float_x -= 5 * 16 * 10 * dt
+                self.curr_pos_float_y -= 1 * 12 * 10 * dt
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
                 x, y = self.rect.x, self.rect.y
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
                                                                           int((x - 4 * y / 3) / 64))
-                print((x + 4 * y) / 128 - int((x + 4 * y) / 128), abs((x - 4 * y / 3) / 64 -
-                                                                          int((x - 4 * y / 3) / 64)))
                 ty = int((x + 4 * y) / 128)
                 tx = - int((x - 4 * y / 3) / 64)
                 if 0.05 <= z <= 0.8 and (self.ty_move == ty or self.tx_move == tx):
@@ -145,24 +170,31 @@ class EntityBase:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
-            # x, y = self.rect.x, self.rect.y
-            # x = x - self.width
-            # z = abs((x - 4 * y / 3) / 64 - int((x - 4 * y / 3) / 64))
-            # print(z)
-            # if z <= 0.1 and not (- int((x - 4 * y / 3) / 64) == self.start_pos_x and int((x + 4 * y) / 128)
-            #                      == self.start_pos_y):
-            #     self.tx = - int((x - 4 * y / 3) / 64)
-            #     self.ty = int((x + 4 * y) / 128)
-            #     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
-            #     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
-            #     self.start_pos_x = self.tx
-            #     self.start_pos_y = self.ty
 
-
-
-
+            elif self.ty - self.ty_move < 0 and self.tx - self.tx_move > 0:
+                self.curr_pos_float_x += 5 * 16 * 10 * dt
+                self.curr_pos_float_y += 1 * 12 * 10 * dt
+                self.rect.x = self.curr_pos_float_x
+                self.rect.y = self.curr_pos_float_y
+                x, y = self.rect.x, self.rect.y
+                x = x - self.width
+                z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
+                                                                          int((x - 4 * y / 3) / 64))
+                ty = int((x + 4 * y) / 128)
+                tx = - int((x - 4 * y / 3) / 64)
+                if 0.05 <= z <= 0.8 and (self.ty_move == ty or self.tx_move == tx):
+                    self.ty = int((x + 4 * y) / 128)
+                    self.tx = - int((x - 4 * y / 3) / 64)
+                    self.rect.y = 2 * 12 * self.ty + 12 * self.tx
+                    self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
+                    self.curr_pos_float_x = self.rect.x
+                    self.curr_pos_float_y = self.rect.y
+                    self.start_pos_y = self.ty
+                    self.start_pos_x = self.tx
 
 
 
