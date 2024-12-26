@@ -54,7 +54,7 @@ class EntityBase:
                 x = x - self.width
                 z = abs((x - 4 * y / 3) / 64 - int((x - 4 * y / 3) / 64))
                 tx = self.tx = - int((x - 4 * y / 3) / 64)
-                if z <= 0.05 and self.start_pos_x != tx:
+                if z <= 0.1 and self.start_pos_x != tx:
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
@@ -123,7 +123,7 @@ class EntityBase:
                                                                           int((x - 4 * y / 3) / 64))
                 ty = int((x + 4 * y) / 128)
                 tx = - int((x - 4 * y / 3) / 64)
-                if 0.05 <= z <= 0.2 and (self.ty_move == ty or self.tx_move == tx):
+                if z <= 0.2 and (self.ty_move == ty or self.tx_move == tx):
                     self.ty = int((x + 4 * y) / 128)
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
@@ -144,7 +144,7 @@ class EntityBase:
                                                                           int((x - 4 * y / 3) / 64))
                 ty = int((x + 4 * y) / 128)
                 tx = - int((x - 4 * y / 3) / 64)
-                if 0.05 <= z <= 0.2 and (self.ty_move == ty or self.tx_move == tx):
+                if z <= 0.2 and (self.ty_move == ty or self.tx_move == tx):
                     self.ty = int((x + 4 * y) / 128)
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
@@ -159,13 +159,18 @@ class EntityBase:
                 self.curr_pos_float_y -= 1 * 12 * 10 * dt
                 self.rect.x = self.curr_pos_float_x
                 self.rect.y = self.curr_pos_float_y
-                x, y = self.rect.x, self.rect.y
+
+                x, y = self.curr_pos_float_x, self.curr_pos_float_y
+                x -= 8
+                y += 20
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
                                                                           int((x - 4 * y / 3) / 64))
                 ty = int((x + 4 * y) / 128)
                 tx = - int((x - 4 * y / 3) / 64)
-                if 0.05 <= z <= 0.8 and (self.ty_move == ty or self.tx_move == tx):
+                print(ty, tx)
+                print(z)
+                if z <= 0.5 and (self.ty_move == ty and self.tx_move == tx):
                     self.ty = int((x + 4 * y) / 128)
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
@@ -180,13 +185,14 @@ class EntityBase:
                 self.curr_pos_float_y += 1 * 12 * 10 * dt
                 self.rect.x = self.curr_pos_float_x
                 self.rect.y = self.curr_pos_float_y
-                x, y = self.rect.x, self.rect.y
+                x, y = self.curr_pos_float_x, self.curr_pos_float_y
+                x -= 8
+                y += 20
                 x = x - self.width
                 z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
                                                                           int((x - 4 * y / 3) / 64))
-                ty = int((x + 4 * y) / 128)
-                tx = - int((x - 4 * y / 3) / 64)
-                if 0.05 <= z <= 0.8 and (self.ty_move == ty or self.tx_move == tx):
+
+                if z <= 0.2:
                     self.ty = int((x + 4 * y) / 128)
                     self.tx = - int((x - 4 * y / 3) / 64)
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
