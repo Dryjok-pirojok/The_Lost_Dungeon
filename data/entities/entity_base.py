@@ -29,7 +29,7 @@ class EntityBase:
     curr_pos_float_x: float
     curr_pos_float_y: float
 
-    def __init__(self, width: int, height: int, tx: int, ty: int, image: pygame.image):
+    def __init__(self, width: int, height: int, tx: int, ty: int, image: pygame.image,):
         self.width = width
         self.height = height
         self.tx = tx
@@ -42,6 +42,8 @@ class EntityBase:
         self.rect.y = 2 * 12 * self.ty + 12 * self.tx
         self.curr_pos_float_x = float(self.rect.x)
         self.curr_pos_float_y = float(self.rect.y)
+        self.x = 0
+        self.y = 0
         
     def update(self, dt):
         if self.tx != self.tx_move or self.ty_move != self.ty:
@@ -144,6 +146,7 @@ class EntityBase:
                                                                           int((x - 4 * y / 3) / 64))
                 ty = int((x + 4 * y) / 128)
                 tx = - int((x - 4 * y / 3) / 64)
+
                 if z <= 0.2 and (self.ty_move == ty or self.tx_move == tx):
                     self.ty = int((x + 4 * y) / 128)
                     self.tx = - int((x - 4 * y / 3) / 64)
@@ -161,18 +164,17 @@ class EntityBase:
                 self.rect.y = self.curr_pos_float_y
 
                 x, y = self.curr_pos_float_x, self.curr_pos_float_y
+                x = x - self.width
                 x -= 8
                 y += 20
-                x = x - self.width
-                z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
-                                                                          int((x - 4 * y / 3) / 64))
                 ty = int((x + 4 * y) / 128)
-                tx = - int((x - 4 * y / 3) / 64)
-                print(ty, tx)
-                print(z)
-                if z <= 0.5 and (self.ty_move == ty and self.tx_move == tx):
-                    self.ty = int((x + 4 * y) / 128)
-                    self.tx = - int((x - 4 * y / 3) / 64)
+                tx = -int((x - 4 * y / 3) / 64)
+                x += 8
+                y -= 20
+                z = abs(2 * 16 * ty - 3 * 16 * tx - x) + abs(2 * 12 * ty + 12 * tx - y)
+                if z <= 5 and (self.start_pos_y != ty and self.start_pos_x != tx):
+                    self.ty = ty
+                    self.tx = tx
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.curr_pos_float_x = self.rect.x
@@ -186,23 +188,23 @@ class EntityBase:
                 self.rect.x = self.curr_pos_float_x
                 self.rect.y = self.curr_pos_float_y
                 x, y = self.curr_pos_float_x, self.curr_pos_float_y
+                x = x - self.width
                 x -= 8
                 y += 20
-                x = x - self.width
-                z = abs((x + 4 * y) / 128 - int((x + 4 * y) / 128)) + abs((x - 4 * y / 3) / 64 -
-                                                                          int((x - 4 * y / 3) / 64))
-
-                if z <= 0.2:
-                    self.ty = int((x + 4 * y) / 128)
-                    self.tx = - int((x - 4 * y / 3) / 64)
+                ty = int((x + 4 * y) / 128)
+                tx = -int((x - 4 * y / 3) / 64)
+                x += 8
+                y -= 20
+                z = abs(2 * 16 * ty - 3 * 16 * tx - x) + abs(2 * 12 * ty + 12 * tx - y)
+                if z <= 5 and (self.start_pos_y != ty and self.start_pos_x != tx):
+                    self.ty = ty
+                    self.tx = tx
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
-
-
 
     def draw(self, screen: pygame.Surface, cam_pos_x: int, cam_pos_y: int):
         screen.blit(self.image, (cam_pos_x + self.rect.x - self.rect.width // 2,

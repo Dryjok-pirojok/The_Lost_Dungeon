@@ -57,7 +57,7 @@ def Loop():
     size = weight, height = 1920, 1080
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
-    player = Player(weight, height)
+    player = Player(weight, height,)
     running = True
     level = Test_level_01
     cols_x = level.col_x
