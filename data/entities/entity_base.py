@@ -28,6 +28,7 @@ class EntityBase:
     start_pos_y: int
     curr_pos_float_x: float
     curr_pos_float_y: float
+    move_is_done: bool
 
     def __init__(self, width: int, height: int, tx: int, ty: int, image: pygame.image,):
         self.width = width
@@ -44,6 +45,7 @@ class EntityBase:
         self.curr_pos_float_y = float(self.rect.y)
         self.x = 0
         self.y = 0
+        self.move_is_done = True
         
     def update(self, dt):
         if self.tx != self.tx_move or self.ty_move != self.ty:
@@ -63,6 +65,7 @@ class EntityBase:
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_x = self.tx
+                    self.move_is_done = True
 
 
             elif self.tx - self.tx_move > 0 and self.ty == self.ty_move:
@@ -81,6 +84,7 @@ class EntityBase:
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_x = self.tx
+                    self.move_is_done = True
 
             elif self.tx == self.tx_move and self.ty - self.ty_move < 0:
                 self.curr_pos_float_x += 2 * 16 * 10 * dt
@@ -96,6 +100,7 @@ class EntityBase:
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.start_pos_y = self.ty
+                    self.move_is_done = True
 
             elif self.tx == self.tx_move and self.ty - self.ty_move > 0:
                 self.curr_pos_float_x -= 2 * 16 * 10 * dt
@@ -113,6 +118,7 @@ class EntityBase:
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
+                    self.move_is_done = True
 
             elif self.ty - self.ty_move < 0 and self.tx - self.tx_move < 0:
                 self.curr_pos_float_x -= 1 * 16 * 10 * dt
@@ -134,6 +140,7 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
+                    self.move_is_done = True
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move > 0:
                 self.curr_pos_float_x += 1 * 16 * 10 * dt
@@ -156,6 +163,7 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
+                    self.move_is_done = True
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move < 0:
                 self.curr_pos_float_x -= 5 * 16 * 10 * dt
@@ -181,6 +189,7 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
+                    self.move_is_done = True
 
             elif self.ty - self.ty_move < 0 and self.tx - self.tx_move > 0:
                 self.curr_pos_float_x += 5 * 16 * 10 * dt
@@ -205,14 +214,20 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
+                    self.move_is_done = True
 
     def draw(self, screen: pygame.Surface, cam_pos_x: int, cam_pos_y: int):
         screen.blit(self.image, (cam_pos_x + self.rect.x - self.rect.width // 2,
                                  cam_pos_y + self.rect.y - self.rect.height))
 
     def move(self, move_to_tx, move_to_ty):
-        self.tx_move = move_to_tx
-        self.ty_move = move_to_ty
-        self.start_pos_x = self.tx
-        self.start_pos_y = self.ty
+        if self.move_is_done:
+            self.tx_move = move_to_tx
+            self.ty_move = move_to_ty
+            self.start_pos_x = self.tx
+            self.start_pos_y = self.ty
+            print(self.move_is_done)
+            self.move_is_done = False
+        if self.tx_move == self.tx and self.ty_move == self.ty:
+            self.move_is_done = True
 
