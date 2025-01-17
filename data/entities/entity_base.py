@@ -1,5 +1,5 @@
 import pygame
-
+from data.items.item_base import ItemBase
 
 class EntityBase:
     ref_id: int  # для обращения во время игры, у каждого объекта свой id
@@ -17,7 +17,7 @@ class EntityBase:
     endurance: int
     # charact. end
     inventory: dict
-    current_hp: int
+    current_hp: float
     current_ap: int
     image: pygame.image
     tx_move: int
@@ -29,6 +29,8 @@ class EntityBase:
     curr_pos_float_x: float
     curr_pos_float_y: float
     move_is_done: bool
+    max_hp: int
+    is_dead: bool
 
     def __init__(self, width: int, height: int, tx: int, ty: int, image: pygame.image,):
         self.width = width
@@ -65,7 +67,7 @@ class EntityBase:
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_x = self.tx
-                    self.move_is_done = True
+
 
 
             elif self.tx - self.tx_move > 0 and self.ty == self.ty_move:
@@ -84,7 +86,7 @@ class EntityBase:
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_x = self.tx
-                    self.move_is_done = True
+
 
             elif self.tx == self.tx_move and self.ty - self.ty_move < 0:
                 self.curr_pos_float_x += 2 * 16 * 10 * dt
@@ -100,7 +102,7 @@ class EntityBase:
                     self.rect.y = 2 * 12 * self.ty + 12 * self.tx
                     self.rect.x = 2 * 16 * self.ty - 3 * 16 * self.tx + self.width
                     self.start_pos_y = self.ty
-                    self.move_is_done = True
+
 
             elif self.tx == self.tx_move and self.ty - self.ty_move > 0:
                 self.curr_pos_float_x -= 2 * 16 * 10 * dt
@@ -118,7 +120,7 @@ class EntityBase:
                     self.curr_pos_float_x = self.rect.x
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
-                    self.move_is_done = True
+
 
             elif self.ty - self.ty_move < 0 and self.tx - self.tx_move < 0:
                 self.curr_pos_float_x -= 1 * 16 * 10 * dt
@@ -140,7 +142,7 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
-                    self.move_is_done = True
+
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move > 0:
                 self.curr_pos_float_x += 1 * 16 * 10 * dt
@@ -163,7 +165,7 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
-                    self.move_is_done = True
+
 
             elif self.ty - self.ty_move > 0 and self.tx - self.tx_move < 0:
                 self.curr_pos_float_x -= 5 * 16 * 10 * dt
@@ -189,7 +191,6 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
-                    self.move_is_done = True
 
             elif self.ty - self.ty_move < 0 and self.tx - self.tx_move > 0:
                 self.curr_pos_float_x += 5 * 16 * 10 * dt
@@ -214,13 +215,14 @@ class EntityBase:
                     self.curr_pos_float_y = self.rect.y
                     self.start_pos_y = self.ty
                     self.start_pos_x = self.tx
-                    self.move_is_done = True
 
     def draw(self, screen: pygame.Surface, cam_pos_x: int, cam_pos_y: int):
         screen.blit(self.image, (cam_pos_x + self.rect.x - self.rect.width // 2,
                                  cam_pos_y + self.rect.y - self.rect.height))
 
     def move(self, move_to_tx, move_to_ty):
+        if self.tx_move == self.tx and self.ty_move == self.ty:
+            self.move_is_done = True
         if self.move_is_done:
             self.tx_move = move_to_tx
             self.ty_move = move_to_ty
@@ -228,6 +230,17 @@ class EntityBase:
             self.start_pos_y = self.ty
             print(self.move_is_done)
             self.move_is_done = False
-        if self.tx_move == self.tx and self.ty_move == self.ty:
-            self.move_is_done = True
 
+    def damage(self, dmg: float):
+        self.current_hp -= dmg
+
+    def death(self):
+        self.is_dead = True
+
+
+    def add_to_inventory(self, item: ItemBase):
+        try:
+            self.inventory[item.base_id] = 1 + self.inventory[item.base_id]
+
+        except KeyError:
+            self.inventory[item.base_id] = 1
