@@ -11,7 +11,7 @@ class Grid:  # Cетка для тайтлов
     grid: list = []
     screen: pygame.surface.Surface
 
-    def __init__(self, screen: pygame.surface.Surface, width: int, height: int, cols_x: int, cols_y: int):
+    def __init__(self, screen: pygame.surface.Surface, width: int, height: int, cols_x: int, cols_y: int, map_w: tuple = ()):
         self.width = width
         self.height = height
         self.screen = screen
@@ -19,6 +19,7 @@ class Grid:  # Cетка для тайтлов
         self.cols_y = cols_y
         self.grid = [[0] * cols_y for _ in range(cols_y)]
 
+    # ТЕСТОВЫЕ ФУНКЦИИ
     def draw_test_rect_ground(self, x: int, y: int):
         """ПРИНИМАЕТ КООРДИНАТЫ ЦЕНТРА ТАЙТЛА"""
         # pygame.draw.rect(self.screen, pygame.Color("0x00FFFF"), (x - a,
@@ -80,3 +81,4 @@ class Grid:  # Cетка для тайтлов
             pygame.draw.line(self.screen, pygame.Color("0x00FFFF"),
                              (x + a, y - z + self.__cell_size_y__ // 3 * 2 - 100),
                              (x - a + self.__cell_size_x__ // 5 * 3, y - z - 100))
+    # ТЕСТОВЫЕ ФУНКЦИИ ЗАКОНЧЕНЫ

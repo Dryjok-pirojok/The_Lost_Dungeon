@@ -7,6 +7,7 @@ import multiprocessing
 from data.base.floor_title_group import Floor
 from data.entities.player.player import Player
 from levels.TEST_LEVELS.test_level_01 import Test_level_01
+from data.base.wall_title_group import Wall
 
 
 # def draw_ground_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int):
@@ -57,7 +58,7 @@ def Loop():
     size = weight, height = 1920, 1080
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
-    player = Player(weight, height,)
+    player = Player(weight, height, 0, 1)
     running = True
     level = Test_level_01
     cols_x = level.col_x
@@ -77,10 +78,12 @@ def Loop():
     ty = 0
     dt = 0
     floor_sprites = pygame.sprite.Group()
+    wall_sprites = pygame.sprite.Group()
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
         Floor(floor_sprites, tx, ty, level.cells[t], weight, height)
+    Wall(wall_sprites, 0, 0, 3, weight, height)
     while running:
 
         for event in pygame.event.get():
@@ -133,6 +136,8 @@ def Loop():
         k = 0
         floor_sprites.update(cam_pos_x, cam_pos_y)
         floor_sprites.draw(screen)
+        wall_sprites.update(cam_pos_x, cam_pos_y)
+        wall_sprites.draw(screen)
         selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
         player.update(dt)
         player.draw(screen, cam_pos_x, cam_pos_y)

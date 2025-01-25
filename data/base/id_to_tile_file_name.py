@@ -2,4 +2,5 @@
 # с которым не меняется в зависимости от текстуры.
 
 global id_to_image
-id_to_image = {1: "textures/titles/floor/grass_1.bmp", 2: "textures/titles/floor/grass_2.bmp"}
+id_to_image = {1: "textures/titles/floor/grass_1.bmp", 2: "textures/titles/floor/grass_2.bmp",
+               3: "textures/titles/wall/wall_01.bmp"}
