@@ -1,6 +1,7 @@
 import sys
 
 import pygame
+from data.base.load_image import load_image
 from data.izometry_eng.grid_ground import Grid
 import threading
 import multiprocessing
@@ -54,6 +55,9 @@ def selected_title(grid: Grid, weight: int, cam_pos_x: int, cam_pos_y: int, tx: 
 
 
 def Loop():
+    icon = load_image("textures/arts/icon.bmp", colorkey=(255, 255, 255))
+    pygame.display.set_icon(icon)
+    pygame.display.set_caption("The Lost Dungeon")
     pygame.init()
     size = weight, height = 1920, 1080
     screen = pygame.display.set_mode(size)
@@ -83,7 +87,9 @@ def Loop():
         tx = t % cols_x
         ty = t // cols_x
         Floor(floor_sprites, tx, ty, level.cells[t], weight, height)
-    Wall(wall_sprites, 0, 0, 3, weight, height)
+    Wall(wall_sprites, 0, 1, (3, 4), weight, height)
+    entities_sprites = []
+
     while running:
 
         for event in pygame.event.get():
@@ -132,20 +138,30 @@ def Loop():
         # thread_wall.start()
         #
         # thread_wall.join()
-
         k = 0
         floor_sprites.update(cam_pos_x, cam_pos_y)
         floor_sprites.draw(screen)
-        wall_sprites.update(cam_pos_x, cam_pos_y)
-        wall_sprites.draw(screen)
+        wall_sprites.update(cam_pos_x, cam_pos_y, [player.return_tx_and_ty()])
         selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
+        entities_sprites.append(player.return_tx_and_ty())
+        for i in wall_sprites:
+            for j in entities_sprites:
+                if j[1] - i.return_tx_and_ty()[1] >= 0:
+                    i.draw(screen)
+
         player.update(dt)
         player.draw(screen, cam_pos_x, cam_pos_y)
+        for i in wall_sprites:
+            for j in entities_sprites:
+                if j[1] - i.return_tx_and_ty()[1] < 0:
+                    i.draw(screen)
         k += 1
         pygame.display.flip()
         clock.tick(fps)
         dt = clock.tick(fps) / 1000
+        entities_sprites.clear()
     pygame.quit()
+
 
 if __name__ == "__main__":
     Loop()

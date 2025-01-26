@@ -228,15 +228,20 @@ class EntityBase:
             self.ty_move = move_to_ty
             self.start_pos_x = self.tx
             self.start_pos_y = self.ty
-            print(self.move_is_done)
             self.move_is_done = False
 
     def damage(self, dmg: float):
         self.current_hp -= dmg
+        if self.current_hp <= 0:
+            self.death()
+
+    def heal(self, heal: float):
+        self.current_hp += heal
+        if self.current_hp > self.max_hp:
+            self.current_hp = self.max_hp
 
     def death(self):
         self.is_dead = True
-
 
     def add_to_inventory(self, item: ItemBase):
         try:
@@ -244,3 +249,6 @@ class EntityBase:
 
         except KeyError:
             self.inventory[item.base_id] = 1
+
+    def return_tx_and_ty(self):
+        return self.tx, self.ty

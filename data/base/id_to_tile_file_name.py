@@ -3,4 +3,4 @@
 
 global id_to_image
 id_to_image = {1: "textures/titles/floor/grass_1.bmp", 2: "textures/titles/floor/grass_2.bmp",
-               3: "textures/titles/wall/wall_01.bmp"}
+               3: "textures/titles/wall/wall_01.bmp", 4: "textures/titles/wall/wall_01_hide.bmp"}

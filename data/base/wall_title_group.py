@@ -13,11 +13,14 @@ class Wall(pygame.sprite.Sprite):
         super().__init__(group)
         self.width = width
         self.height = height
-        self.image = load_image(id_to_image[type_sprite[0]], (255, 255, 255))
+        self.norm_image = load_image(id_to_image[type_sprite[0]], (255, 255, 255))
         self.hided_image = load_image(id_to_image[type_sprite[1]], (255, 255, 255))
+        self.image = self.norm_image
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
+        self.tx = tx
+        self.ty = ty
         self.x = 2 * 16 * ty - 3 * 16 * tx + self.width - 40
         self.y = 2 * 12 * ty + 12 * tx - self.rect.height - 6
     # def draw(self, screen: pygame.sprite.Group, cam_pos_x: int, cam_pos_y: int):
@@ -28,6 +31,15 @@ class Wall(pygame.sprite.Sprite):
         список координат (x, y) видимых сущностей"""
         self.rect.x = self.x + args[0]
         self.rect.y = self.y + args[1]
+        for x, y in args[2]:
 
-    def draw(self, screen):
-        print(1)
+            if y < self.ty <= y + 2 and abs(self.tx - x) <= 2:
+                self.image = self.hided_image
+            else:
+                self.image = self.norm_image
+
+    def draw(self, screen: pygame.Surface):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+    def return_tx_and_ty(self):
+        return self.tx, self.ty
