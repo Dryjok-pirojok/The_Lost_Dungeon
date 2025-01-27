@@ -10,6 +10,8 @@ from data.entities.player.player import Player
 from levels.TEST_LEVELS.test_level_01 import Test_level_01
 from data.base.wall_title_group import Wall
 from data.entities.enemies.test_npc_enemy import Test_Npc_Enemy
+from data.base.config import button_keys, FPS
+
 
 # def draw_ground_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int):
 #     cols_x = grid.cols_x
@@ -70,7 +72,7 @@ def Loop():
     cam_pos_x = 0
     cam_pos_y = 0
     grid = Grid(screen, size[0], size[1], cols_x, cols_y)
-    fps = 144
+    fps = FPS
     k = 0
     base_x = 0
     base_y = 0
@@ -132,6 +134,23 @@ def Loop():
                     y += 20
                     tx = - int((x - 4 * y / 3) / 64)
                     ty = int((x + 4 * y) / 128)
+                    if tx < 0:
+                        tx = 0
+                    if ty < 0:
+                        ty = 0
+                    if tx > level.col_x - 1:
+                        tx = level.col_x - 1
+                    if ty > level.col_y - 1:
+                        ty = level.col_y - 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == button_keys["inventory"]:
+                    print("inventory key pressed")
+
+                if event.key == button_keys["console"]:
+                    print("console key pressed")
+
+                if event.key == button_keys["menu"]:
+                    print("menu key pressed")
 
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -151,33 +170,19 @@ def Loop():
         floor_sprites.draw(screen)
         wall_sprites.update(cam_pos_x, cam_pos_y, [player.return_tx_and_ty()])
         selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
-        player.update(dt)
         for i in entities:
             to_draw[i.return_tx_and_ty()[1]].append(i)
-
         for key, items in to_draw.items():
             for i in items:
-                try:
-                    i.draw(screen)
-                except Exception:
+                if str(i) == "NPC":
                     i.draw(screen, cam_pos_x, cam_pos_y)
                     to_draw[key].remove(i)
-        # for i in wall_sprites:
-        #     for j in entities_sprites:
-        #         if j[1] - i.return_tx_and_ty()[1] >= 0:
-        #             i.draw(screen)
-        # test_npc.draw(screen, cam_pos_x, cam_pos_y)
-        # player.update(dt)
-        # player.draw(screen, cam_pos_x, cam_pos_y)
-        # for i in wall_sprites:
-        #     for j in entities_sprites:
-        #         if j[1] - i.return_tx_and_ty()[1] < 0:
-        #             i.draw(screen)
-
+                else:
+                    i.draw(screen)
+        player.update(dt)
         pygame.display.flip()
         clock.tick(fps)
         dt = clock.tick(fps) / 1000
-        print(clock.get_fps())
     pygame.quit()
 
 
