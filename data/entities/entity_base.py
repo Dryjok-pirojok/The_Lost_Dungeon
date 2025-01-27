@@ -252,3 +252,6 @@ class EntityBase:
 
     def return_tx_and_ty(self):
         return self.tx, self.ty
+
+    def __str__(self):
+        return "NPC"

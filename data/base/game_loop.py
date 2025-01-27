@@ -9,7 +9,7 @@ from data.base.floor_title_group import Floor
 from data.entities.player.player import Player
 from levels.TEST_LEVELS.test_level_01 import Test_level_01
 from data.base.wall_title_group import Wall
-
+from data.entities.enemies.test_npc_enemy import Test_Npc_Enemy
 
 # def draw_ground_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int):
 #     cols_x = grid.cols_x
@@ -83,13 +83,22 @@ def Loop():
     dt = 0
     floor_sprites = pygame.sprite.Group()
     wall_sprites = pygame.sprite.Group()
+    entities = []
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
         Floor(floor_sprites, tx, ty, level.cells[t], weight, height)
     Wall(wall_sprites, 0, 1, (3, 4), weight, height)
-    entities_sprites = []
+    test_npc = Test_Npc_Enemy(weight, height, 3, 3, load_image("textures/entities/test_npc_en.png"))
+    entities.append(player)
+    entities.append(test_npc)
+    to_draw = {}
 
+    for i in range(0, level.col_y):
+        to_draw[i] = []
+    for i in wall_sprites:
+        z = i.return_tx_and_ty()[1]
+        to_draw[z].append(i)
     while running:
 
         for event in pygame.event.get():
@@ -138,28 +147,37 @@ def Loop():
         # thread_wall.start()
         #
         # thread_wall.join()
-        k = 0
         floor_sprites.update(cam_pos_x, cam_pos_y)
         floor_sprites.draw(screen)
         wall_sprites.update(cam_pos_x, cam_pos_y, [player.return_tx_and_ty()])
         selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
-        entities_sprites.append(player.return_tx_and_ty())
-        for i in wall_sprites:
-            for j in entities_sprites:
-                if j[1] - i.return_tx_and_ty()[1] >= 0:
-                    i.draw(screen)
-
         player.update(dt)
-        player.draw(screen, cam_pos_x, cam_pos_y)
-        for i in wall_sprites:
-            for j in entities_sprites:
-                if j[1] - i.return_tx_and_ty()[1] < 0:
+        for i in entities:
+            to_draw[i.return_tx_and_ty()[1]].append(i)
+
+        for key, items in to_draw.items():
+            for i in items:
+                try:
                     i.draw(screen)
-        k += 1
+                except Exception:
+                    i.draw(screen, cam_pos_x, cam_pos_y)
+                    to_draw[key].remove(i)
+        # for i in wall_sprites:
+        #     for j in entities_sprites:
+        #         if j[1] - i.return_tx_and_ty()[1] >= 0:
+        #             i.draw(screen)
+        # test_npc.draw(screen, cam_pos_x, cam_pos_y)
+        # player.update(dt)
+        # player.draw(screen, cam_pos_x, cam_pos_y)
+        # for i in wall_sprites:
+        #     for j in entities_sprites:
+        #         if j[1] - i.return_tx_and_ty()[1] < 0:
+        #             i.draw(screen)
+
         pygame.display.flip()
         clock.tick(fps)
         dt = clock.tick(fps) / 1000
-        entities_sprites.clear()
+        print(clock.get_fps())
     pygame.quit()
 
 
