@@ -5,13 +5,17 @@ from data.base.load_image import load_image
 from data.izometry_eng.grid_ground import Grid
 import threading
 import multiprocessing
-from data.base.floor_title_group import Floor
+from data.base.floor_title_group import Floor, ChangeLevel
 from data.entities.player.player import Player
 from levels.TEST_LEVELS.test_level_01 import Test_level_01
 from data.base.wall_title_group import Wall
 from data.entities.enemies.test_npc_enemy import Test_Npc_Enemy
-from data.base.config import button_keys, FPS
+from data.base.config import button_keys, FPS, levels, curr_level, SIZE
 
+
+def change_level_func(to_level):
+    global curr_level
+    curr_level = to_level
 
 # def draw_ground_grid(grid: Grid, cam_pos_x: int, cam_pos_y: int):
 #     cols_x = grid.cols_x
@@ -56,17 +60,17 @@ def selected_title(grid: Grid, weight: int, cam_pos_x: int, cam_pos_y: int, tx: 
 #                 grid.draw_test_wall(x_to_draw, y_to_draw, 2)
 
 
-def Loop():
+def Loop(queue: multiprocessing.Queue):
     icon = load_image("textures/arts/icon.bmp", colorkey=(255, 255, 255))
     pygame.display.set_icon(icon)
     pygame.display.set_caption("The Lost Dungeon")
     pygame.init()
-    size = weight, height = 1920, 1080
+    size = weight, height = SIZE
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     player = Player(weight, height, 0, 1)
     running = True
-    level = Test_level_01
+    level = curr_level
     cols_x = level.col_x
     cols_y = level.col_y
     cam_pos_x = 0
@@ -85,22 +89,35 @@ def Loop():
     dt = 0
     floor_sprites = pygame.sprite.Group()
     wall_sprites = pygame.sprite.Group()
+    change_room_sprites = pygame.sprite.Group()
     entities = []
+
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
-        Floor(floor_sprites, tx, ty, level.cells[t], weight, height)
+        Floor(floor_sprites, tx, ty, level.cells[t], weight, height)\
+
+    if level.to_nest_level:
+        for i in level.to_nest_level:
+            print(1)
+            ChangeLevel(change_room_sprites, i[0], i[1], 5, weight, height, i[2])
+
     Wall(wall_sprites, 0, 1, (3, 4), weight, height)
+
     test_npc = Test_Npc_Enemy(weight, height, 3, 3, load_image("textures/entities/test_npc_en.png"))
+
     entities.append(player)
     entities.append(test_npc)
-    to_draw = {}
 
+    to_draw = {}
     for i in range(0, level.col_y):
         to_draw[i] = []
     for i in wall_sprites:
         z = i.return_tx_and_ty()[1]
         to_draw[z].append(i)
+
+
+
     while running:
 
         for event in pygame.event.get():
@@ -170,6 +187,10 @@ def Loop():
         floor_sprites.draw(screen)
         wall_sprites.update(cam_pos_x, cam_pos_y, [player.return_tx_and_ty()])
         selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
+
+        change_room_sprites.update(cam_pos_x, cam_pos_y, player, change_level_func)
+        change_room_sprites.draw(screen)
+
         for i in entities:
             to_draw[i.return_tx_and_ty()[1]].append(i)
         for key, items in to_draw.items():
@@ -183,8 +204,9 @@ def Loop():
         pygame.display.flip()
         clock.tick(fps)
         dt = clock.tick(fps) / 1000
-    pygame.quit()
-
+        if level != curr_level:
+            queue.put({"status_end": "open_new"})
+            return False
 
 if __name__ == "__main__":
     Loop()
