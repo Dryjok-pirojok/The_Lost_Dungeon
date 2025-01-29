@@ -12,7 +12,6 @@ from data.base.wall_title_group import Wall
 from data.entities.enemies.test_npc_enemy import Test_Npc_Enemy
 from data.base.config import button_keys, FPS, levels, curr_level, SIZE
 
-
 def change_level_func(to_level):
     global curr_level
     curr_level = to_level
@@ -86,8 +85,11 @@ def Loop(queue: multiprocessing.Queue, screen, clock):
     floor_sprites = pygame.sprite.Group()
     wall_sprites = pygame.sprite.Group()
     change_room_sprites = pygame.sprite.Group()
+    misc_sprites = pygame.sprite.Group()
     entities = []
-
+    inv_showed = False
+    cons_showed = False
+    menu_showed = False
     for t in range(cols_x * cols_y):
         tx = t % cols_x
         ty = t // cols_x
@@ -95,15 +97,15 @@ def Loop(queue: multiprocessing.Queue, screen, clock):
 
     if level.to_nest_level:
         for i in level.to_nest_level:
-            print(1)
+
             ChangeLevel(change_room_sprites, i[0], i[1], 5, weight, height, i[2])
 
     Wall(wall_sprites, 0, 1, (3, 4), weight, height)
 
     test_npc = Test_Npc_Enemy(weight, height, 3, 3, load_image("textures/entities/test_npc_en.png"))
-
     entities.append(player)
     entities.append(test_npc)
+
 
     to_draw = {}
     for i in range(0, level.col_y):
@@ -113,7 +115,6 @@ def Loop(queue: multiprocessing.Queue, screen, clock):
         to_draw[z].append(i)
 
 
-
     while running:
 
         for event in pygame.event.get():
@@ -121,50 +122,53 @@ def Loop(queue: multiprocessing.Queue, screen, clock):
                 queue.put({"status_end": "game_ended"})
                 return False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == pygame.BUTTON_RIGHT:
-                    right_button = True
-                    base_x = event.pos[0]
-                    base_y = event.pos[1]
-                    ev_x = event.pos[0]
-                    ev_y = event.pos[1]
-                if event.button == pygame.BUTTON_LEFT:
+                if not (menu_showed or cons_showed or inv_showed):
+                    if event.button == pygame.BUTTON_RIGHT:
+                        right_button = True
+                        base_x = event.pos[0]
+                        base_y = event.pos[1]
+                        ev_x = event.pos[0]
+                        ev_y = event.pos[1]
+                    if event.button == pygame.BUTTON_LEFT:
 
-                    player.move(tx, ty)
-                    left_button = True
+                        player.move(tx, ty)
+                        left_button = True
 
             if event.type == pygame.MOUSEMOTION:
-                if right_button:
-                    ev_x = event.pos[0]
-                    ev_y = event.pos[1]
-                    cam_pos_x = cam_pos_x + (base_x - ev_x)
-                    cam_pos_y = cam_pos_y + (base_y - ev_y)
-                    base_x = event.pos[0]
-                    base_y = event.pos[1]
-                else:
-                    x, y = event.pos[0], event.pos[1]
-                    x = x - cam_pos_x - weight
-                    y = y - cam_pos_y
-                    x -= 8
-                    y += 20
-                    tx = - int((x - 4 * y / 3) / 64)
-                    ty = int((x + 4 * y) / 128)
-                    if tx < 0:
-                        tx = 0
-                    if ty < 0:
-                        ty = 0
-                    if tx > level.col_x - 1:
-                        tx = level.col_x - 1
-                    if ty > level.col_y - 1:
-                        ty = level.col_y - 1
+                if not (menu_showed or cons_showed or inv_showed):
+                    if right_button:
+                        ev_x = event.pos[0]
+                        ev_y = event.pos[1]
+                        cam_pos_x = cam_pos_x + (base_x - ev_x)
+                        cam_pos_y = cam_pos_y + (base_y - ev_y)
+                        base_x = event.pos[0]
+                        base_y = event.pos[1]
+                    else:
+                        x, y = event.pos[0], event.pos[1]
+                        x = x - cam_pos_x - weight
+                        y = y - cam_pos_y
+                        x -= 8
+                        y += 20
+                        tx = - int((x - 4 * y / 3) / 64)
+                        ty = int((x + 4 * y) / 128)
+                        if tx < 0:
+                            tx = 0
+                        if ty < 0:
+                            ty = 0
+                        if tx > level.col_x - 1:
+                            tx = level.col_x - 1
+                        if ty > level.col_y - 1:
+                            ty = level.col_y - 1
             if event.type == pygame.KEYDOWN:
                 if event.key == button_keys["inventory"]:
-                    print("inventory key pressed")
+                    inv_showed = not inv_showed
 
                 if event.key == button_keys["console"]:
-                    print("console key pressed")
+                    cons_showed = not cons_showed
 
                 if event.key == button_keys["menu"]:
-                    print("menu key pressed")
+                    menu_showed = not menu_showed
+
 
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -184,9 +188,10 @@ def Loop(queue: multiprocessing.Queue, screen, clock):
         floor_sprites.draw(screen)
         wall_sprites.update(cam_pos_x, cam_pos_y, [player.return_tx_and_ty()])
         selected_title(grid, weight, cam_pos_x, cam_pos_y, tx, ty)
-
         change_room_sprites.update(cam_pos_x, cam_pos_y, player, change_level_func)
         change_room_sprites.draw(screen)
+
+
 
         for i in entities:
             to_draw[i.return_tx_and_ty()[1]].append(i)
@@ -197,6 +202,11 @@ def Loop(queue: multiprocessing.Queue, screen, clock):
                     to_draw[key].remove(i)
                 else:
                     i.draw(screen)
+
+
+
+        hsva = (255, 255, 255, 1)
+        pygame.draw.line(screen, hsva, (0, 0), (1920, 1080))
         player.update(dt)
         pygame.display.flip()
         clock.tick(fps)
@@ -210,8 +220,9 @@ def Game_main(queue):
     pygame.display.set_icon(icon)
     pygame.display.set_caption("The Lost Dungeon")
     pygame.init()
-    screen = pygame.display.set_mode(SIZE)
+    screen = pygame.display.set_mode(SIZE, pygame.SRCALPHA)
     clock = pygame.time.Clock()
+    pygame.font.init()
     while True:
         a = Loop(queue, screen, clock)
         if not a:

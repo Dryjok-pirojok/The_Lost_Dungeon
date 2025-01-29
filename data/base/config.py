@@ -16,3 +16,5 @@ curr_level = a
 levels = [Test_level_01, a]
 
 SIZE = (1920, 1080)
+
+VOLUME = 1

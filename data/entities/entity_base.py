@@ -48,7 +48,7 @@ class EntityBase:
         self.x = 0
         self.y = 0
         self.move_is_done = True
-        
+        self.inventory = {}
     def update(self, dt):
         if self.tx != self.tx_move or self.ty_move != self.ty:
             if self.tx - self.tx_move < 0 and self.ty == self.ty_move:
@@ -243,15 +243,26 @@ class EntityBase:
     def death(self):
         self.is_dead = True
 
-    def add_to_inventory(self, item: ItemBase):
+    def add_to_inventory(self, item: ItemBase, count=1):
         try:
-            self.inventory[item.base_id] = 1 + self.inventory[item.base_id]
+            self.inventory[item] = count + self.inventory[item]
 
         except KeyError:
-            self.inventory[item.base_id] = 1
+            self.inventory[item] = 1
+
+    def remove_from_inventory(self, item: ItemBase, count=1):
+        try:
+            self.inventory[item] = self.inventory[item] - count
+            if self.inventory[item] == 0:
+                self.inventory.pop(item)
+        except Exception as err:
+            pass
 
     def return_tx_and_ty(self):
         return self.tx, self.ty
 
     def __str__(self):
         return "NPC"
+
+    def return_inv(self):
+        return self.inventory

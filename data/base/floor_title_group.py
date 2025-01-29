@@ -41,4 +41,3 @@ class ChangeLevel(Floor):
         self.rect.y = self.y + args[1]
         if self.tx == args[2].return_tx_and_ty()[0] and self.ty == args[2].return_tx_and_ty()[1]:
             args[3](self.change_level)
-            print(22)
