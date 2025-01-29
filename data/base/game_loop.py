@@ -60,14 +60,10 @@ def selected_title(grid: Grid, weight: int, cam_pos_x: int, cam_pos_y: int, tx: 
 #                 grid.draw_test_wall(x_to_draw, y_to_draw, 2)
 
 
-def Loop(queue: multiprocessing.Queue):
-    icon = load_image("textures/arts/icon.bmp", colorkey=(255, 255, 255))
-    pygame.display.set_icon(icon)
-    pygame.display.set_caption("The Lost Dungeon")
-    pygame.init()
+def Loop(queue: multiprocessing.Queue, screen, clock):
     size = weight, height = SIZE
-    screen = pygame.display.set_mode(size)
-    clock = pygame.time.Clock()
+    screen = screen
+    clock = clock
     player = Player(weight, height, 0, 1)
     running = True
     level = curr_level
@@ -122,7 +118,8 @@ def Loop(queue: multiprocessing.Queue):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                queue.put({"status_end": "game_ended"})
+                return False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == pygame.BUTTON_RIGHT:
                     right_button = True
@@ -205,8 +202,19 @@ def Loop(queue: multiprocessing.Queue):
         clock.tick(fps)
         dt = clock.tick(fps) / 1000
         if level != curr_level:
-            queue.put({"status_end": "open_new"})
-            return False
+            return True
 
-if __name__ == "__main__":
-    Loop()
+
+def Game_main(queue):
+    icon = load_image("textures/arts/icon.bmp", colorkey=(255, 255, 255))
+    pygame.display.set_icon(icon)
+    pygame.display.set_caption("The Lost Dungeon")
+    pygame.init()
+    screen = pygame.display.set_mode(SIZE)
+    clock = pygame.time.Clock()
+    while True:
+        a = Loop(queue, screen, clock)
+        if not a:
+            break
+
+
