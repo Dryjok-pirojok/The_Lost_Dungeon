@@ -31,6 +31,7 @@ class EntityBase:
     move_is_done: bool
     max_hp: int
     is_dead: bool
+    max_ap: int
 
     def __init__(self, width: int, height: int, tx: int, ty: int, image: pygame.image, left_hand=None, right_hand=None):
         self.width = width
@@ -51,6 +52,9 @@ class EntityBase:
         self.inventory = {}
         self.left_hand = left_hand
         self.right_hand = right_hand
+
+
+
     def update(self, dt):
         if self.tx != self.tx_move or self.ty_move != self.ty:
             if self.tx - self.tx_move < 0 and self.ty == self.ty_move:
