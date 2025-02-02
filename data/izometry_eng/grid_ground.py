@@ -1,6 +1,16 @@
 import pygame
 
 
+def peres_1(A, B, C):
+    return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+
+
+def peresek(a, b):
+    A, B = a
+    C, D = b
+    return peres_1(A, C, D) != peres_1(B, C, D) and peres_1(A, B, C) != peres_1(A, B, D)
+
+
 class Grid:  # Cетка для тайтлов
     width: int
     height: int
@@ -11,75 +21,54 @@ class Grid:  # Cетка для тайтлов
     grid: list = []
     screen: pygame.surface.Surface
 
-    def __init__(self, screen: pygame.surface.Surface, width: int, height: int, cols_x: int, cols_y: int, map_w: tuple = ()):
+    def __init__(self, width: int, height: int, cols_x: int, cols_y: int, map_w: tuple = ()):
         self.width = width
         self.height = height
-        self.screen = screen
         self.cols_x = cols_x
         self.cols_y = cols_y
         self.grid = [[0] * cols_y for _ in range(cols_y)]
+        self.map_w = map_w
 
-    # ТЕСТОВЫЕ ФУНКЦИИ
-    def draw_test_rect_ground(self, x: int, y: int):
-        """ПРИНИМАЕТ КООРДИНАТЫ ЦЕНТРА ТАЙТЛА"""
-        # pygame.draw.rect(self.screen, pygame.Color("0x00FFFF"), (x - a,
-        #                  y - z,
-        #                  self.__cell_size_x__, self.__cell_size_y__), 1)
-        z = self.__cell_size_y__ // 2
-        a = self.__cell_size_x__ // 2
-        pygame.draw.line(self.screen, pygame.Color("0xFF00FF"), (x - a + self.__cell_size_x__ // 5 * 3,
-                                                                 y - z), (x - a, y - z + self.__cell_size_y__ // 3), 1)
-        pygame.draw.line(self.screen, pygame.Color("0xFF00FF"),
-                         (x - a, y - z + self.__cell_size_y__ // 3), (x - a + self.__cell_size_x__ // 5 * 2,
-                                                                      y + z), 1)
-        pygame.draw.line(self.screen, pygame.Color("0xFF00FF"), (x - a + self.__cell_size_x__ // 5 * 2, y + z),
-                         (x + a, y - z + self.__cell_size_y__ // 3 * 2), 1)
-        pygame.draw.line(self.screen, pygame.Color("0xFF00FF"), (x + a, y - z + self.__cell_size_y__ // 3 * 2),
-                         (x - a + self.__cell_size_x__ // 5 * 3, y - z), 1)
-        # СТРАШНО, ОЧЕНЬ СТРАШНО
+    def test_can_walk(self, start_pos, end_pos):
+        pass
 
-    def draw_red_ground(self, x: int, y: int):
-        """ПРИНИМАЕТ КООРДИНАТЫ ЦЕНТРА ТАЙТЛА"""
-        # pygame.draw.rect(self.screen, pygame.Color("0x00FFFF"), (x - a,
-        #                  y - z,
-        #                  self.__cell_size_x__, self.__cell_size_y__), 1)
-        z = self.__cell_size_y__ // 2
-        a = self.__cell_size_x__ // 2
-        pygame.draw.line(self.screen, pygame.Color("0xFF0000"), (x - a + self.__cell_size_x__ // 5 * 3,
-                                                                 y - z), (x - a, y - z + self.__cell_size_y__ // 3), 1)
-        pygame.draw.line(self.screen, pygame.Color("0xFF0000"),
-                         (x - a, y - z + self.__cell_size_y__ // 3), (x - a + self.__cell_size_x__ // 5 * 2,
-                                                                      y + z), 1)
-        pygame.draw.line(self.screen, pygame.Color("0xFF0000"), (x - a + self.__cell_size_x__ // 5 * 2, y + z),
-                         (x + a, y - z + self.__cell_size_y__ // 3 * 2), 1)
-        pygame.draw.line(self.screen, pygame.Color("0xFF0000"), (x + a, y - z + self.__cell_size_y__ // 3 * 2),
-                         (x - a + self.__cell_size_x__ // 5 * 3, y - z), 1)
-        # СТРАШНО, ОЧЕНЬ СТРАШНО
+    def test_can_see(self, pos_1, pos_2):
+        pos_1_x = pos_1[0] + 0.5
+        pos_1_y = pos_1[1] + 0.5
 
-    def draw_test_wall(self, x, y, side):
-        """ПРИНИМАЕТ КООРДИНАТЫ ЦЕНТРА ТАЙТЛА И СТОРОНУ (1 - ПРАВО, ВЕРХ, 2 - ЛЕВО, ВЕРХ"""
-        if side == 1:
-            z = self.__cell_size_y__ // 2
-            a = self.__cell_size_x__ // 2
-            pygame.draw.line(self.screen, pygame.Color("0x00FFFF"),
-                             (x - a + self.__cell_size_x__ // 5 * 3, y - z), (x - a + self.__cell_size_x__ // 5 * 3,
-                                                                              y - z - 100))
-            pygame.draw.line(self.screen, pygame.Color("0x00FFFF"),
-                             (x - a, y - z + self.__cell_size_y__ // 3),
-                             (x - a, y - z + self.__cell_size_y__ // 3 - 100))
-            pygame.draw.line(self.screen, pygame.Color("0x00FFFF"), (x - a, y - z + self.__cell_size_y__ // 3 - 100),
-                             (x - a + self.__cell_size_x__ // 5 * 3, y - z - 100))
-        elif side == 2:
-            z = self.__cell_size_y__ // 2
-            a = self.__cell_size_x__ // 2
-            pygame.draw.line(self.screen, pygame.Color("0x00FFFF"),
-                             (x - a + self.__cell_size_x__ // 5 * 3, y - z), (x - a + self.__cell_size_x__ // 5 * 3,
-                                                                              y - z - 100))
-            pygame.draw.line(self.screen, pygame.Color("0x00FFFF"),
-                             (x + a, y - z + self.__cell_size_y__ // 3 * 2),
-                             (x + a, y - z + self.__cell_size_y__ // 3 * 2 - 100))
-            pygame.draw.line(self.screen, pygame.Color("0x00FFFF"),
-                             (x + a, y - z + self.__cell_size_y__ // 3 * 2 - 100),
-                             (x - a + self.__cell_size_x__ // 5 * 3, y - z - 100))
-    # ТЕСТОВЫЕ ФУНКЦИИ ЗАКОНЧЕНЫ
+        pos_2_x = pos_2[0] + 0.5
+        pos_2_y = pos_2[1] + 0.5
+        otrezok = ((pos_1_x, pos_1_y), (pos_2_x, pos_2_y))
+        if self.map_w:
+            for i in self.map_w:
+                if i[2] != "1":
+                    otrezok_2 = ((i[0], i[1]), (i[0] + 1, i[1]))
 
+                else:
+                    otrezok_2 = ((i[0] + 1, i[1]), (i[0] + 1, i[1] - 1))
+                z = peresek(otrezok, otrezok_2)
+                if z and not i[4]:
+                    return False
+
+        return True
+
+    def test_can_attack(self, pos_1, pos_2, distance):
+        pos_1_x = pos_1[0] + 0.5
+        pos_1_y = pos_1[1] + 0.5
+
+        pos_2_x = pos_2[0] + 0.5
+        pos_2_y = pos_2[1] + 0.5
+        if ((pos_1_x - pos_2_x) ** 2 + (pos_1_y - pos_2_y) ** 2) ** 0.5 > distance:
+            return False
+        otrezok = ((pos_1_x, pos_1_y), (pos_2_x, pos_2_y))
+        if self.map_w:
+            for i in self.map_w:
+                if i[2] != "1":
+                    otrezok_2 = ((i[0], i[1]), (i[0] + 1, i[1]))
+
+                else:
+                    otrezok_2 = ((i[0] + 1, i[1]), (i[0] + 1, i[1] - 1))
+                z = peresek(otrezok, otrezok_2)
+                if z and not i[5]:
+                    return False
+        return True

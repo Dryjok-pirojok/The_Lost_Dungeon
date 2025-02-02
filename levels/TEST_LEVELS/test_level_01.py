@@ -6,3 +6,5 @@ class Test_level_01:
     col_y: int = 10
     cells: tuple = (2, 2, 1, 1, 2, 2, 1, 1, 2, 2,) * 10
     to_nest_level: tuple = None
+    walls = None
+    grid = None
