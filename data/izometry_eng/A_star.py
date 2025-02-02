@@ -1,69 +1,103 @@
 import heapq
-from math import sqrt
 
+def heuristic(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-class Node:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.g = 0
-        self.h = 0
-        self.f = 0
-        self.parent = None
+def a_star(graph, start, goal):
+    open_set = []
+    heapq.heappush(open_set, (0, start))
+    came_from = {}
+    g_score = {node: float('inf') for node in graph}
+    g_score[start] = 0
+    f_score = {node: float('inf') for node in graph}
+    f_score[start] = heuristic(start, goal)
+    tentative_g_score = 0
 
-    def __lt__(self, other):
-        return self.f < other.f
+    while open_set:
+        _, current = heapq.heappop(open_set)
 
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        for neighbor, cost in graph[current].items():
+            tentative_g_score = g_score[current] + cost
+            if tentative_g_score < g_score[neighbor]:
+                if tentative_g_score < 100000:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = g_score[neighbor] + heuristic(neighbor, goal)
+                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
 
-def a_star(start, end, obstacles):
-    start_node = Node(start[0], start[1])
-    end_node = Node(end[0], end[1])
+        if current == goal:
+            return reconstruct_path(came_from, current)
 
-    open_list = []
-    heapq.heappush(open_list, start_node)
-
-    closed_set = set()
-
-    while open_list:
-        current_node = heapq.heappop(open_list)
-        if current_node == end_node:
-            path = []
-            while current_node is not None:
-                path.append((current_node.x, current_node.y))
-                current_node = current_node.parent
-            return path[::-1]
-        closed_set.add(current_node)
-        neighbors = []
-        for dx in range(-1, 2):
-            for dy in range(-1, 2):
-                if dx == 0 and dy == 0:
-                    continue
-                x = current_node.x + dx
-                y = current_node.y + dy
-                if any([x < 0, x >= len(obstacles), y < 0, y >= len(obstacles[0])]):
-                    continue
-                if obstacles[x][y]:
-                    break
-                neighbor = Node(x, y)
-                neighbors.append(neighbor)
-        for neighbor in neighbors:
-            if neighbor in closed_set:
-                continue
-            new_g = current_node.g + 1
-            if nfo := next((n for n in open_list if n == neighbor), None):
-                if new_g < nfo.g:
-                    nfo.g = new_g
-                    nfo.h = sqrt((end_node.x - neighbor.x) ** 2 + (end_node.y - neighbor.y) ** 2)
-                    nfo.f = nfo.g + nfo.h
-                    nfo.parent = current_node
-            else:
-                neighbor.g = new_g
-                neighbor.h = sqrt((end_node.x - neighbor.x) ** 2 + (end_node.y - neighbor.y) ** 2)
-                neighbor.f = nfo.g + nfo.h
-                neighbor.parent = current_node
-                heapq.heappush(open_list, neighbors)
     return None
 
+def reconstruct_path(came_from, current):
+    total_path = [current]
+    while current in came_from:
+        current = came_from[current]
+        total_path.append(current)
+    total_path.reverse()
+    return total_path
 
+def path_to_edges(path):
+    return [(path[i], path[i + 1]) for i in range(len(path) - 1)]
+
+
+
+# 0 - нет стен
+# 1 - стена сверху
+# 2 - стена слева
+
+
+# grid = [[(1, 2), 1, (1, 2), 1, 1, 1, 1],
+#         [2, 0, 2, 0, 0, 0, 0],
+#         [2, 0, 0, 0, 0, 0, 0],
+#         [2, 0, 1, 1, 1, 2, 0],
+#         [2, 0, 0, 0, 0, 2, 0],
+#         [2, 0, 0, 0, 0, 2, 0],
+#         [2, 0, 0, 0, 0, 1, 0]]
+
+grid = [[0, 0, 0],
+        [1, 2, 0],
+        [0, 2, 0],]
+
+def create_graph(grid): #преобразование списка в граф
+    graph = dict()
+    for row in range(len(grid)):
+        for col in range(len(grid[0])):
+            graph[(row, col)] = dict()
+            cell = graph[(row, col)]
+            if 0 <= row < len(grid) - 1:
+                if any([grid[row + 1][col] in [0, 2] and isinstance(grid[row + 1][col], int),
+                        isinstance(grid[row + 1][col], tuple) and 1 not in grid[row + 1][col]]):
+                    cell[(row + 1, col)] = 1
+                else:
+                    cell[(row + 1, col)] = 10 ** 6
+
+            if 0 < row <= len(grid) - 1:
+                if any([grid[row][col] in [0, 2] and isinstance(grid[row][col], int),
+                        isinstance(grid[row][col], tuple) and 1 not in grid[row][col]]):
+                    cell[(row - 1, col)] = 1
+                else:
+                    cell[(row - 1, col)] = 10 ** 6
+
+            if 0 <= col < len(grid[0]) - 1:
+                if any([grid[row][col + 1] in [0, 1] and isinstance(grid[row][col + 1], int),
+                        isinstance(grid[row][col + 1], tuple) and 2 not in grid[row][col + 1]]):
+                    cell[(row, col + 1)] = 1
+                else:
+                    cell[(row, col + 1)] = 10 ** 6
+            if 0 < col <= len(grid[0]) - 1:
+                if any([grid[row][col] in [0, 1] and isinstance(grid[row][col], int),
+                        isinstance(grid[row][col], tuple) != 0 and 2 not in grid[row][col]]):
+                    cell[(row, col - 1)] = 1
+                else:
+                    cell[(row, col - 1)] = 10 ** 6
+    return graph
+
+
+graph = create_graph(grid)
+start = (0, 0)
+goal = (1, 0)
+
+path = a_star(graph, start, goal)
+print(path)
